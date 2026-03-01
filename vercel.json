@@ -3,7 +3,6 @@
     {
       "source": "/api/:path*",
       "destination": "https://alibaba-hackathon-production.up.railway.app/api/:path*"
-<<<<<<< HEAD
     },
     {
       "source": "/(.*)",
@@ -11,8 +10,3 @@
     }
   ]
 }
-=======
-    }
-  ]
-}
->>>>>>> 95bc494e1d3f1327acc2f54c0d1c28c569b900e5
