@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import useAppStore, { formatRupiah } from '../store/appStore'
 
+const API = import.meta.env.VITE_API_BASE_URL || ''
+
 // ─── Image Compression Utility ────────────────────────────────────────────────
 function compressImageToBase64(file, maxWidth = 800, quality = 0.75) {
   return new Promise((resolve, reject) => {
@@ -316,7 +318,7 @@ export default function Chat() {
   const handleAddTransaction = async (payload, msgId) => {
     setActionLoading(msgId)
     try {
-      const res = await fetch('/api/transactions', {
+      const res = await fetch(`${API}/api/transactions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...payload, userId: useAppStore.getState().user?.id }),
@@ -334,7 +336,7 @@ export default function Chat() {
   const handleCancelSubscription = async (payload, msgId) => {
     setActionLoading(msgId)
     try {
-      const res = await fetch('/api/subscriptions', {
+      const res = await fetch(`${API}/api/subscriptions`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...payload, userId: useAppStore.getState().user?.id }),
@@ -431,7 +433,7 @@ export default function Chat() {
       }
       if (sentImage) body.imageBase64 = sentImage
 
-      const res = await fetch('/api/chat', {
+      const res = await fetch(`${API}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),

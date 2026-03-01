@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 
+const API = import.meta.env.VITE_API_BASE_URL || ''
+
 // ─── Mock Data (sesuai plan.md) ───────────────────────────────────────────────
 const MOCK_DATA = {
   user: {
@@ -178,7 +180,7 @@ const useAppStore = create((set, get) => ({
   // Called by LandingPage after Google OAuth succeeds.
   // idToken = signed JWT credential from @react-oauth/google GoogleLogin component.
   loginWithGoogle: async (idToken) => {
-    const res = await fetch('/api/auth/google', {
+    const res = await fetch(`${API}/api/auth/google`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ idToken }),
@@ -194,7 +196,7 @@ const useAppStore = create((set, get) => ({
   // Demo bypass — skips Google OAuth entirely. Useful for hackathon demos and
   // local dev when Google Cloud Console propagation is still pending.
   demoLogin: async () => {
-    const res = await fetch('/api/auth/demo', { method: 'POST' })
+    const res = await fetch(`${API}/api/auth/demo`, { method: 'POST' })
     if (!res.ok) throw new Error('Demo login failed')
     const data = await res.json()
     localStorage.setItem('finlabs_user', JSON.stringify(data.user))
@@ -211,7 +213,7 @@ const useAppStore = create((set, get) => ({
   // Called after the user clicks "Confirm & Save" on the review screen.
   saveProfile: async (profileData) => {
     const { user } = get()
-    const res = await fetch('/api/user/profile', {
+    const res = await fetch(`${API}/api/user/profile`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId: user.id, ...profileData }),
@@ -235,7 +237,7 @@ const useAppStore = create((set, get) => ({
     const { user } = get()
     try {
       const userId = user?.id
-      const url = userId ? `/api/data?userId=${encodeURIComponent(userId)}` : '/api/data'
+      const url = userId ? `${API}/api/data?userId=${encodeURIComponent(userId)}` : `${API}/api/data`
       const res = await fetch(url)
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data = await res.json()
@@ -289,7 +291,7 @@ const useAppStore = create((set, get) => ({
   // Add a new budget category (calls POST /api/categories)
   addCategory: async (categoryData) => {
     const { user } = get()
-    const res = await fetch('/api/categories', {
+    const res = await fetch(`${API}/api/categories`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId: user?.id, ...categoryData }),
@@ -302,7 +304,7 @@ const useAppStore = create((set, get) => ({
   // Update limits of existing categories (calls PUT /api/budgets)
   rebalanceBudgets: async (updatedBudgets) => {
     const { user } = get()
-    const res = await fetch('/api/budgets', {
+    const res = await fetch(`${API}/api/budgets`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId: user?.id, budgets: updatedBudgets }),

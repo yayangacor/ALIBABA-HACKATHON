@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import useAppStore from '../store/appStore'
 
+const API = import.meta.env.VITE_API_BASE_URL || ''
+
 // ─── Persona options shown in the review editor ───────────────────────────────
 const PERSONAS = ['Student', 'Young Professional', 'Entrepreneur']
 
@@ -614,7 +616,7 @@ export default function OnboardingPage() {
       const formData = new FormData()
       formData.append('audio', blob, 'recording.webm')
 
-      const res = await fetch('/api/onboarding/transcribe', { method: 'POST', body: formData })
+      const res = await fetch(`${API}/api/onboarding/transcribe`, { method: 'POST', body: formData })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
 
       const data = await res.json()
@@ -640,7 +642,7 @@ export default function OnboardingPage() {
 
     try {
       const user = useAppStore.getState().user
-      const res = await fetch('/api/user/profile', {
+      const res = await fetch(`${API}/api/user/profile`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
