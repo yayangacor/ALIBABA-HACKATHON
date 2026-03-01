@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://alibaba-hackathon-production.up.railway.app/"
+      "destination": "https://alibaba-hackathon-production.up.railway.app/api/:path*"
     }
   ]
 }
