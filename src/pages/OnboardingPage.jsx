@@ -2,14 +2,14 @@ import { useState, useRef, useEffect } from 'react'
 import useAppStore from '../store/appStore'
 
 // ─── Persona options shown in the review editor ───────────────────────────────
-const PERSONAS = ['Student', 'Young Professional', 'Family', 'Entrepreneur', 'Retiree']
+const PERSONAS = ['Student', 'Young Professional', 'Entrepreneur']
 
 // ─── Standardised money constraint categories (from riset fintech) ────────────
 const MONEY_CONSTRAINTS = [
-  'Bocor Pengeluaran Kecil',
-  'Gaji Cepat Habis',
-  'Terjerat Cicilan Paylater',
-  'Malas Catat Manual',
+  'Impulse snacking',
+  'Low Cash Flow',
+  'Over-leveraged',
+  'Manual entry friction',
 ]
 
 // ── Small reusable components ─────────────────────────────────────────────────
@@ -244,6 +244,54 @@ function PhaseProcessing() {
   )
 }
 
+// ─── PHASE: budget_processing ─────────────────────────────────────────────────
+function PhaseBudgetProcessing() {
+  return (
+    <div className="flex flex-col items-center justify-center px-6 py-16 animate-fade-up min-h-[60vh]">
+      {/* Orb spinner */}
+      <div className="relative flex items-center justify-center w-28 h-28 mb-8">
+        <div className="absolute inset-0 rounded-full border border-accent/20 animate-orb-ring" />
+        <div className="absolute inset-3 rounded-full border border-accent/10 animate-orb-ring"
+          style={{ animationDelay: '0.8s' }} />
+        <div
+          className="w-20 h-20 rounded-full bg-card animate-orb-pulse flex items-center justify-center"
+          style={{ boxShadow: '0 0 32px rgba(0,229,160,0.6), 0 0 64px rgba(0,229,160,0.2)' }}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="#00E5A0" strokeWidth={1.6} className="w-9 h-9">
+            <path strokeLinecap="round" strokeLinejoin="round"
+              d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-5.26L4 11l5.91-1.74L12 2z" />
+          </svg>
+        </div>
+      </div>
+      <p className="text-text-primary font-bold text-lg mb-2">✨ AI is crafting your budget…</p>
+      <p className="text-text-muted text-sm text-center leading-relaxed max-w-[260px]">
+        Analyzing your income and constraints to create your perfect personalized budget plan.
+      </p>
+      {/* Animated dots */}
+      <div className="flex gap-1.5 mt-6">
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            className="w-2 h-2 rounded-full bg-accent animate-typing"
+            style={{ animationDelay: `${i * 0.2}s` }}
+          />
+        ))}
+      </div>
+      <div className="mt-8 bg-accent/5 border border-accent/15 rounded-2xl px-5 py-4 w-full max-w-[280px]">
+        <p className="text-accent text-xs font-bold mb-2 text-center">Powered by Alibaba Qwen AI</p>
+        <ul className="space-y-1.5">
+          {['Calculating spending limits per category', 'Adapting to your persona & goals', 'Optimizing for your constraints'].map((step) => (
+            <li key={step} className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent/60 flex-shrink-0" />
+              <span className="text-text-muted text-[11px]">{step}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}
+
 // ─── PHASE: review ────────────────────────────────────────────────────────────
 function PhaseReview({ data, onConfirm, onReRecord, isSaving }) {
   const [form, setForm] = useState({
@@ -253,6 +301,7 @@ function PhaseReview({ data, onConfirm, onReRecord, isSaving }) {
     money_constraints: MONEY_CONSTRAINTS.includes(data.money_constraints)
       ? data.money_constraints
       : '',
+    monthly_income: data.monthly_income || '',
   })
 
   const field = (key, label, isTextarea = false) => (
@@ -333,6 +382,24 @@ function PhaseReview({ data, onConfirm, onReRecord, isSaving }) {
 
         <div>
           <label className="text-accent text-[10px] font-bold uppercase tracking-widest mb-1.5 block">
+            Monthly Income (Rp)
+          </label>
+          <input
+            type="number"
+            placeholder="e.g. 8000000"
+            value={form.monthly_income || ''}
+            onChange={(e) => setForm((f) => ({ ...f, monthly_income: e.target.value }))}
+            className="w-full bg-bg border border-white/10 rounded-xl px-3 py-2.5 text-text-primary
+                       text-xs focus:outline-none focus:border-accent/50 transition-colors
+                       placeholder:text-text-muted/50"
+          />
+          <p className="text-text-muted text-[10px] mt-1">
+            Used by AI to generate your personalized budget breakdown
+          </p>
+        </div>
+
+        <div>
+          <label className="text-accent text-[10px] font-bold uppercase tracking-widest mb-1.5 block">
             Money Constraint
           </label>
           <ConstraintChips
@@ -377,7 +444,7 @@ function PhaseReview({ data, onConfirm, onReRecord, isSaving }) {
 
 // ─── PHASE: manual ────────────────────────────────────────────────────────────
 function PhaseManual({ onSubmit, onBack }) {
-  const [form, setForm] = useState({ persona: 'Young Professional', financial_goals: '', money_constraints: '' })
+  const [form, setForm] = useState({ persona: 'Young Professional', financial_goals: '', money_constraints: '', monthly_income: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async () => {
@@ -432,6 +499,24 @@ function PhaseManual({ onSubmit, onBack }) {
 
         <div>
           <label className="text-accent text-[10px] font-bold uppercase tracking-widest mb-1.5 block">
+            Monthly Income (Rp)
+          </label>
+          <input
+            type="number"
+            placeholder="e.g. 8000000"
+            value={form.monthly_income}
+            onChange={(e) => setForm((f) => ({ ...f, monthly_income: e.target.value }))}
+            className="w-full bg-bg border border-white/10 rounded-xl px-3 py-2.5 text-text-primary
+                       text-xs focus:outline-none focus:border-accent/50 transition-colors
+                       placeholder:text-text-muted/50"
+          />
+          <p className="text-text-muted text-[10px] mt-1">
+            Used by AI to generate your personalized budget breakdown
+          </p>
+        </div>
+
+        <div>
+          <label className="text-accent text-[10px] font-bold uppercase tracking-widest mb-1.5 block">
             My money constraint
           </label>
           <ConstraintChips
@@ -463,17 +548,16 @@ function PhaseManual({ onSubmit, onBack }) {
 // Phases:  intro → recording → processing → review → (done — App.jsx navigates away)
 //          intro → manual → (done)
 export default function OnboardingPage() {
-  const { saveProfile, logout } = useAppStore()
+  const { logout } = useAppStore()
 
-  const [phase, setPhase]           = useState('intro')
-  const [elapsed, setElapsed]       = useState(0)
+  const [phase, setPhase] = useState('intro')
+  const [elapsed, setElapsed] = useState(0)
   const [extractedData, setExtracted] = useState(null)
-  const [isSaving, setIsSaving]     = useState(false)
-  const [error, setError]           = useState(null)
+  const [error, setError] = useState(null)
 
   const mediaRecorderRef = useRef(null)
-  const chunksRef        = useRef([])
-  const timerRef         = useRef(null)
+  const chunksRef = useRef([])
+  const timerRef = useRef(null)
 
   // Clean up timer on unmount
   useEffect(() => () => clearInterval(timerRef.current), [])
@@ -510,8 +594,8 @@ export default function OnboardingPage() {
     } catch (err) {
       const msg =
         err.name === 'NotAllowedError' ? 'Microphone access denied — use text input instead.' :
-        err.name === 'NotFoundError'   ? 'No microphone found — use text input instead.' :
-                                         'Could not access microphone. Please use text input.'
+          err.name === 'NotFoundError' ? 'No microphone found — use text input instead.' :
+            'Could not access microphone. Please use text input.'
       setError(msg)
     }
   }
@@ -525,7 +609,7 @@ export default function OnboardingPage() {
   const processAudio = async () => {
     try {
       const mimeType = mediaRecorderRef.current?.mimeType || 'audio/webm'
-      const blob     = new Blob(chunksRef.current, { type: mimeType })
+      const blob = new Blob(chunksRef.current, { type: mimeType })
 
       const formData = new FormData()
       formData.append('audio', blob, 'recording.webm')
@@ -544,21 +628,42 @@ export default function OnboardingPage() {
   }
 
   // ── Confirm & Save ─────────────────────────────────────────────────────────
+  // We call the API directly here so we can:
+  //  1. Show budget_processing phase immediately while the API runs
+  //  2. Call fetchAppData() after the API returns (to load AI-generated budgets)
+  //  3. Then mark onboarding complete, triggering App.jsx navigation to home
 
   const handleConfirm = async (formData) => {
-    setIsSaving(true)
     setError(null)
+    // Immediately transition to the cinematic loading phase
+    setPhase('budget_processing')
+
     try {
-      await saveProfile({
-        persona:           formData.persona,
-        financial_goals:   formData.financial_goals,
-        money_constraints: formData.money_constraints,
+      const user = useAppStore.getState().user
+      const res = await fetch('/api/user/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          persona: formData.persona,
+          financial_goals: formData.financial_goals,
+          money_constraints: formData.money_constraints,
+          monthly_income: Number(formData.monthly_income) || 0,
+        }),
       })
-      // App.jsx watches onboardingCompleted and will navigate to main app automatically
+      if (!res.ok) throw new Error(`Server error ${res.status}`)
+
+      // Refresh store with the freshly generated budgets from the AI
+      await useAppStore.getState().fetchAppData()
+
+      // Mark onboarding complete → App.jsx re-renders and navigates to home
+      localStorage.setItem('finlabs_onboarding', 'true')
+      useAppStore.setState({ onboardingCompleted: true })
     } catch (err) {
       console.error('[OnboardingPage] Save error:', err)
       setError('Failed to save profile. Please try again.')
-      setIsSaving(false)
+      // Revert to the appropriate input phase so the user can retry
+      setPhase(extractedData ? 'review' : 'manual')
     }
   }
 
@@ -613,12 +718,13 @@ export default function OnboardingPage() {
           <PhaseRecording elapsed={elapsed} onStop={stopRecording} />
         )}
         {phase === 'processing' && <PhaseProcessing />}
+        {phase === 'budget_processing' && <PhaseBudgetProcessing />}
         {phase === 'review' && extractedData && (
           <PhaseReview
             data={extractedData}
             onConfirm={handleConfirm}
             onReRecord={() => { setExtracted(null); setPhase('intro') }}
-            isSaving={isSaving}
+            isSaving={false}
           />
         )}
         {phase === 'manual' && (

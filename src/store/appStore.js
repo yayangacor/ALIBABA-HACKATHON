@@ -254,10 +254,16 @@ const useAppStore = create((set, get) => ({
 
   // Derived: Today's total spending
   getTodaySpending: () => {
-    const todayStr = '2026-02-28' // Pinned to demo date
+    const todayStr = new Date().toISOString().split('T')[0]
     return get().transactions
       .filter(t => t.date.startsWith(todayStr))
       .reduce((sum, t) => sum + t.amount, 0)
+  },
+
+  // Derived: Number of transactions today
+  getTodayTransactionsCount: () => {
+    const todayStr = new Date().toISOString().split('T')[0]
+    return get().transactions.filter(t => t.date.startsWith(todayStr)).length
   },
 
   // Derived: Monthly spending grouped by category (for donut chart)
@@ -280,7 +286,37 @@ const useAppStore = create((set, get) => ({
     return get().budgets.reduce((sum, b) => sum + b.currentSpent, 0)
   },
 
-  // Derived: Transactions grouped by date for Timeline
+  // Add a new budget category (calls POST /api/categories)
+  addCategory: async (categoryData) => {
+    const { user } = get()
+    const res = await fetch('/api/categories', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: user?.id, ...categoryData }),
+    })
+    if (!res.ok) throw new Error('Failed to add category')
+    const data = await res.json()
+    set(state => ({ budgets: [...state.budgets, data.budget] }))
+  },
+
+  // Update limits of existing categories (calls PUT /api/budgets)
+  rebalanceBudgets: async (updatedBudgets) => {
+    const { user } = get()
+    const res = await fetch('/api/budgets', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: user?.id, budgets: updatedBudgets }),
+    })
+    if (!res.ok) throw new Error('Failed to update budgets')
+    set(state => ({
+      budgets: state.budgets.map(b => {
+        const updated = updatedBudgets.find(u => u.id === b.id)
+        return updated ? { ...b, limit: updated.limit } : b
+      }),
+    }))
+  },
+
+  // Derived: Transactions grouped by date for Transaction page
   getGroupedTransactions: () => {
     const groups = {}
     get().transactions.forEach(t => {

@@ -2,17 +2,17 @@ import { useEffect } from 'react'
 import useAppStore from './store/appStore'
 import BottomNav from './components/BottomNav'
 import Home from './pages/Home'
-import Timeline from './pages/Timeline'
-import Subscriptions from './pages/Subscriptions'
+import Transaction from './pages/Transaction'
 import Chat from './pages/Chat'
+import Insight from './pages/Insight'
 import LandingPage from './pages/LandingPage'
 import OnboardingPage from './pages/OnboardingPage'
 
 const PAGES = {
   home: Home,
-  timeline: Timeline,
-  subscriptions: Subscriptions,
+  transaction: Transaction,
   chat: Chat,
+  insight: Insight,
 }
 
 export default function App() {
@@ -35,7 +35,7 @@ export default function App() {
   return (
     <div
       className="flex flex-col h-screen max-w-sm mx-auto bg-bg overflow-hidden"
-      style={{ boxShadow: '0 0 80px rgba(0,0,0,0.5)' }}
+      style={{ boxShadow: '0 0 40px rgba(0,0,0,0.15)' }}
     >
       <main key={currentTab} className="flex-1 overflow-hidden page-enter">
         <PageComponent />

@@ -13,28 +13,16 @@ const NAV_ITEMS = [
     ),
   },
   {
-    id: 'timeline',
-    label: 'Timeline',
+    id: 'transaction',
+    label: 'Transactions',
     icon: (active) => (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
         stroke={active ? '#00E5A0' : '#4B5280'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="8" y1="6" x2="21" y2="6"/>
-        <line x1="8" y1="12" x2="21" y2="12"/>
-        <line x1="8" y1="18" x2="21" y2="18"/>
-        <line x1="3" y1="6" x2="3.01" y2="6"/>
-        <line x1="3" y1="12" x2="3.01" y2="12"/>
-        <line x1="3" y1="18" x2="3.01" y2="18"/>
-      </svg>
-    ),
-  },
-  {
-    id: 'subscriptions',
-    label: 'Subscriptions',
-    icon: (active) => (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-        stroke={active ? '#00E5A0' : '#4B5280'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-        <line x1="1" y1="10" x2="23" y2="10"/>
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+        <polyline points="10 9 9 9 8 9"/>
       </svg>
     ),
   },
@@ -49,13 +37,24 @@ const NAV_ITEMS = [
       </svg>
     ),
   },
+  {
+    id: 'insight',
+    label: 'Insight',
+    icon: (active) => (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+        stroke={active ? '#00E5A0' : '#4B5280'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>
+        <path d="M22 12A10 10 0 0 0 12 2v10z"/>
+      </svg>
+    ),
+  },
 ]
 
 export default function BottomNav() {
   const { currentTab, setTab } = useAppStore()
 
   return (
-    <nav className="flex-shrink-0 border-t border-white/[0.06] bg-[#0D0E22]">
+    <nav className="flex-shrink-0 border-t border-black/[0.08] bg-card" style={{ boxShadow: '0 -2px 16px rgba(0,0,0,0.06)' }}>
       <div className="flex items-center justify-around px-2 pt-2 pb-safe" style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}>
         {NAV_ITEMS.map((item) => {
           const active = currentTab === item.id

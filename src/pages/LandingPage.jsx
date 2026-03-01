@@ -90,8 +90,8 @@ export default function LandingPage() {
         className="fixed inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(ellipse 60% 40% at 50% -10%, rgba(0,229,160,0.12) 0%, transparent 70%),' +
-            'radial-gradient(ellipse 40% 30% at 80% 80%, rgba(79,157,255,0.08) 0%, transparent 60%)',
+            'radial-gradient(ellipse 60% 40% at 50% -10%, rgba(0,201,138,0.15) 0%, transparent 70%),' +
+            'radial-gradient(ellipse 40% 30% at 80% 80%, rgba(79,157,255,0.1) 0%, transparent 60%)',
         }}
       />
 
@@ -99,8 +99,8 @@ export default function LandingPage() {
 
         {/* ── Logo ── */}
         <div
-          className="w-16 h-16 rounded-2xl bg-card border border-accent/20 flex items-center justify-center mb-5"
-          style={{ boxShadow: '0 0 28px rgba(0,229,160,0.35), 0 0 60px rgba(0,229,160,0.15)' }}
+          className="w-16 h-16 rounded-2xl bg-card border border-accent/30 flex items-center justify-center mb-5"
+          style={{ boxShadow: '0 0 24px rgba(0,201,138,0.3), 0 4px 16px rgba(0,0,0,0.08)' }}
         >
           {/* Sparkle / AI icon */}
           <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8" stroke="#00E5A0" strokeWidth={1.6}>
@@ -140,7 +140,7 @@ export default function LandingPage() {
           {FEATURES.map((f) => (
             <div
               key={f.label}
-              className="bg-card rounded-2xl p-3 flex flex-col items-center text-center gap-2 border border-white/5"
+              className="bg-card rounded-2xl p-3 flex flex-col items-center text-center gap-2 border border-black/[0.08]" style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}
             >
               <div
                 className="w-9 h-9 rounded-xl flex items-center justify-center"
@@ -184,7 +184,7 @@ export default function LandingPage() {
               <GoogleLogin
                 onSuccess={handleSuccess}
                 onError={handleError}
-                theme="filled_black"
+                theme="outline"
                 size="large"
                 shape="pill"
                 text="continue_with"
@@ -193,16 +193,16 @@ export default function LandingPage() {
 
               {/* ── Divider ── */}
               <div className="flex items-center gap-3 w-full max-w-xs">
-                <div className="flex-1 h-px bg-white/8" />
+                <div className="flex-1 h-px bg-black/[0.1]" />
                 <span className="text-text-muted text-[10px] uppercase tracking-widest">or</span>
-                <div className="flex-1 h-px bg-white/8" />
+                <div className="flex-1 h-px bg-black/[0.1]" />
               </div>
 
               {/* Demo Login — bypasses Google OAuth for hackathon demos */}
               <button
                 onClick={handleDemoLogin}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-full border border-white/10
-                           text-text-muted text-xs hover:text-text-primary hover:border-white/25
+                className="flex items-center gap-2 px-6 py-2.5 rounded-full border border-black/[0.12]
+                           text-text-muted text-xs hover:text-text-primary hover:border-black/25
                            transition-all duration-200 active:scale-95"
               >
                 <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-accent/60">

@@ -75,7 +75,7 @@ function DateGroup({ group }) {
 
 const FILTERS = ['Semua', 'Foods', 'Drinks', 'Snacks', 'Entertainment']
 
-export default function Timeline() {
+export default function Transaction() {
   const { getGroupedTransactions } = useAppStore()
   const [activeFilter, setActiveFilter] = useState('Semua')
   const [search, setSearch] = useState('')
@@ -97,7 +97,7 @@ export default function Timeline() {
     <div className="flex flex-col h-full">
       {/* Sticky header */}
       <div className="flex-shrink-0 px-4 pt-4 pb-3 bg-bg border-b border-black/[0.08]">
-        <h2 className="text-text-primary text-xl font-bold mb-3">Timeline</h2>
+        <h2 className="text-text-primary text-xl font-bold mb-3">Transactions</h2>
 
         {/* Search */}
         <div className="flex items-center gap-2.5 bg-card rounded-xl px-3.5 py-2.5 mb-3"

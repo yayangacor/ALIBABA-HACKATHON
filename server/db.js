@@ -128,6 +128,13 @@ async function initializeDatabase() {
       }
     }
 
+    // ── Live-migration: add monthly_income to user_profiles ──
+    try {
+      await conn.execute('ALTER TABLE user_profiles ADD COLUMN monthly_income BIGINT NOT NULL DEFAULT 0')
+    } catch (e) {
+      if (e.code !== 'ER_DUP_FIELDNAME') throw e
+    }
+
     // ── Live-migration: add user_id to data tables for multi-user isolation ──
     const userIdMigrations = [
       'ALTER TABLE budgets ADD COLUMN user_id VARCHAR(20)',

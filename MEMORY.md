@@ -33,11 +33,6 @@ d:/WORK/HACKATHON/AliBaba2/
 └── postcss.config.js
 ```
 
-## Color Palette (tailwind.config.js)
-- bg: #0A0B1A, card: #111228, card2: #181A35
-- accent (green AI): #00E5A0, blue: #4F9DFF
-- amber: #FBBF24, danger: #F87171, pink: #F472B6
-- text-primary: #E8EAF6, text-muted: #8892B0
 
 ## Key Flows
 1. **Wow Factor Demo**: Home → Quick Insight card (amber) → tap → navigates to Chat tab → auto-plays demo conversation (AI alert → User question → AI analysis with "Review Subscriptions →" button → navigates to Subscriptions tab)
@@ -160,3 +155,59 @@ Processing: animated Qwen orb with typing dots
 Review & Confirm: shows extracted JSON as editable fields (persona chip-selector, textarea for goals/constraints), transcript in a <details> disclosure, explicit "audio already discarded" confirmation before the green "Confirm & Save →" button
 Manual fallback: full text form if mic is denied or user prefers typing
 .env (new) — VITE_GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID_HERE
+
+ Here's a summary of every change made:
+
+src/store/appStore.js
+getTodaySpending() — replaced hardcoded '2026-02-28' with new Date().toISOString().split('T')[0] so it always uses today's real date.
+getTodayTransactionsCount() — new selector, same date logic, returns .length instead of a sum.
+src/pages/Home.jsx
+TodaySpendingCard({ amount, todayTxCount })
+
+Date line: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) — always current.
+Transaction count: todayTxCount === 0 ? 'Belum ada transaksi hari ini' : \${todayTxCount} transaksi hari ini``
+Removed the static "-12% vs kemarin" span entirely (can't compute it without a dedicated store selector).
+DonutSection({ chartData, total })
+
+Month label: new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }) — always current.
+isEmpty guard: when total === 0 || chartData.length === 0, renders a clean centered empty state (circle icon + two muted text lines) instead of the pie chart.
+QuickInsightCard({ onTap, hasTransactions, criticalBudget })
+
+Onboarding mode (!hasTransactions): green accent styling, sparkle star icon, "Mulai Catat Keuanganmu · AI" title, onboarding copy.
+Insight mode (has transactions): existing amber styling; body text dynamically reads criticalBudget.currentSpent / criticalBudget.limit — falls back to "Pengeluaranmu bulan ini masih terkendali." if no budget hits ≥80%.
+Home (default export)
+
+Added transactions, getTodayTransactionsCount, getCriticalBudgets to the destructure.
+Computes todayTxCount, criticalBudget and passes them down as props.
+
+Summary of Changes
+Home.jsx — Quick Insight fix
+Removed setChatTriggered(true) from handleQuickInsightTap. Clicking the card now only calls setTab('chat'), navigating without triggering the dummy demo sequence.
+Chat.jsx — Real user data in API calls
+handleAddTransaction → body now includes userId so transactions are correctly saved for the logged-in user.
+handleCancelSubscription → body now includes userId so only that user's subscription is deleted.
+handleSend → body now includes userId so buildSystemPrompt fetches data for the correct user.
+server/db.js — DB migration
+Added a live ALTER TABLE user_profiles ADD COLUMN monthly_income BIGINT migration in the same try/catch pattern as existing migrations.
+server/server.js — Four backend fixes
+POST /api/chat — Extracts userId from body and passes it to buildSystemPrompt(userId).
+buildSystemPrompt(userId) — All four queries now use WHERE user_id = ? (or WHERE id = ? for users), falling back to 'U-101' if no userId.
+DELETE /api/subscriptions — Now filters by user_id when provided, preventing cross-user deletions.
+POST /api/user/profile — Accepts monthly_income, saves it to the DB, then calls Qwen to generate a personalized 4-category budget (Foods/Drinks/Snacks/Entertainment), deletes old budgets, and inserts the AI-generated ones.
+OnboardingPage.jsx — AI Budgeting UX
+Added monthly_income input field to both PhaseReview and PhaseManual.
+Added PhaseBudgetProcessing — a cinematic loading screen with animated orb, typed dots, and "Powered by Alibaba Qwen AI" details list.
+handleConfirm now: (1) immediately switches to budget_processing phase, (2) POSTs to /api/user/profile with monthly_income, (3) awaits fetchAppData() to load AI-generated budgets into Zustand, (4) then sets onboardingCompleted: true via useAppStore.setState() which triggers App.jsx navigation to home.
+
+Modified files:
+
+src/App.jsx — Removed Subscriptions, renamed Timeline→Transaction, added Insight to PAGES
+src/components/BottomNav.jsx — Tabs: Home / Transactions (receipt icon) / AI Chat / Insight (pie chart icon)
+src/store/appStore.js — Added addCategory() and rebalanceBudgets() async actions
+server/server.js — Three changes:
+GET /api/data now LEFT JOINs user_profiles to include monthly_income
+POST /api/categories — inserts a new budget row, returns the created budget object
+PUT /api/budgets — bulk-updates limit column for an array of budgets
+Deleted:
+
+src/pages/Subscriptions.jsx
