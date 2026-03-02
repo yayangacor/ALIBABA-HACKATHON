@@ -692,18 +692,19 @@ Aturan respons wajib:
 }
 
 // ─── Start ────────────────────────────────────────────────────────────────────
+// Always start the HTTP server first so Railway health checks pass and CORS
+// headers are present. DB init is attempted after the server is already listening.
 async function start() {
-  try {
-    await initializeDatabase()
-    app.listen(PORT, () => {
-      console.log(`🚀 FinLabs Backend running on http://localhost:${PORT}`)
-      console.log(`   GET  http://localhost:${PORT}/api/data`)
-      console.log(`   POST http://localhost:${PORT}/api/chat`)
-    })
-  } catch (err) {
-    console.error('❌ Failed to connect to database. Server will not start.', err.message)
-    process.exit(1)
-  }
+  app.listen(PORT, async () => {
+    console.log(`🚀 FinLabs Backend running on http://localhost:${PORT}`)
+    console.log(`   GET  http://localhost:${PORT}/api/data`)
+    console.log(`   POST http://localhost:${PORT}/api/chat`)
+    try {
+      await initializeDatabase()
+    } catch (err) {
+      console.error('❌ DB init failed (server still running, endpoints will return 503):', err.message)
+    }
+  })
 }
 
 start()
