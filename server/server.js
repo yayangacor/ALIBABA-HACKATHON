@@ -13,6 +13,9 @@ app.use(cors({ origin: '*', methods: ['GET','POST','PUT','DELETE','OPTIONS'], al
 app.options('*', cors())
 app.use(express.json({ limit: '20mb' })) // allow base64 image payloads
 
+// ─── Health Check (no DB) ─────────────────────────────────────────────────────
+app.get('/health', (_req, res) => res.json({ ok: true, ts: Date.now() }))
+
 // ─── Helper ───────────────────────────────────────────────────────────────────
 const fmt = (n) => Number(n).toLocaleString('id-ID')
 
