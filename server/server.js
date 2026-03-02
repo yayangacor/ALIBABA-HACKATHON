@@ -9,7 +9,8 @@ const PORT   = process.env.PORT || 3001
 // multer: keep audio in memory (max 25 MB), no disk writes — audio is ephemeral
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024 } })
 
-app.use(cors())
+app.use(cors({ origin: '*', methods: ['GET','POST','PUT','DELETE','OPTIONS'], allowedHeaders: ['Content-Type','Authorization'] }))
+app.options('*', cors())
 app.use(express.json({ limit: '20mb' })) // allow base64 image payloads
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
